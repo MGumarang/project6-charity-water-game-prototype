@@ -105,11 +105,68 @@ section.categories p {
 /* Question screen styles */
 #question-screen {
     background-color: #FFC907;
+    padding: 35px;
+    border-radius: 10px;
+}
+
+#question-screen button {
+    border-radius: 5px;
+    border: none;
+}
+
+button.back {
+    font-size: 1.25rem;
+    padding: 10px;
+}
+
+p#question-text {
+    font-size: 2.5rem;
+    font-weight: 500;
 }
 
 #answers {
     display: flex;
     flex-direction: column;
+    gap: 10px;
+}
+
+button.answer {
+    padding: 10px;
+    text-align: left;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+p#answer-result {
+    margin-top: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.question-button.answered {
+    background: #003366;
+    color: white;
+    cursor: not-allowed;
+}
+
+/* Did You Know styles */
+#did-you-know {
+    margin-top: 30px;
+    border-left: 4px solid #003366;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    padding: 20px;
+}
+
+#did-you-know h3 {
+    margin: 5px 0;
+    font-weight: bold;
+}
+
+#did-you-know p {
+    margin: 0;
+    line-height: 1.6;
+    white-space: pre-line;
 }
 
 /* Buttons styles */
