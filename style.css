@@ -102,6 +102,16 @@ section.categories p {
     display: none;
 }
 
+/* Question screen styles */
+#question-screen {
+    background-color: #FFC907;
+}
+
+#answers {
+    display: flex;
+    flex-direction: column;
+}
+
 /* Buttons styles */
 .question-button {
     background-color: #FFF7E1;
@@ -116,7 +126,13 @@ section.categories p {
 }
 
 .question-button:hover {
-    transform: scale(0.8);
+    transform: scale(0.9);
+}
+
+/* Hide the Question and Victory screens */
+
+.hidden {
+    display: none;
 }
 
 
