@@ -1,6 +1,11 @@
 // Use Arrays to store questions, answers, and discoveries
+const body = document.body;
 let completed = 0;
 let score = 0;
+const totalScore = document.getElementById("scoreText");
+if (totalScore) {
+    totalScore.textContent = `Score: ${score} / 7500`;
+}
 const questions = {
 
     "Dorm Life": {
@@ -348,6 +353,44 @@ buttons.forEach(button => {
     });
 });
 
+// Changes accordion behavior based on screen size, and updates accessibility attributes accordingly
+const accordionMediaQuery = window.matchMedia("(min-width: 701px)");
+const accordionButtons = document.querySelectorAll(".category-card .accordion-button");
+const accordionPanels = document.querySelectorAll(".category-card .accordion-collapse");
+
+// Syncs the accordion's accessibility attributes with its current state
+function syncAccordionAccessibility() {
+    const desktopMode = accordionMediaQuery.matches;
+
+    accordionButtons.forEach(button => {
+        button.disabled = desktopMode;
+        button.classList.toggle("collapsed", !desktopMode);
+        button.setAttribute("aria-expanded", desktopMode ? "true" : "false");
+        button.setAttribute("aria-disabled", desktopMode ? "true" : "false");
+    });
+
+    // Syncs the accordion panels' visibility and accessibility attributes with the current mode
+    accordionPanels.forEach(panel => {
+        const collapse = bootstrap.Collapse.getOrCreateInstance(panel, { toggle: false });
+
+        if (desktopMode) {
+            collapse.show();
+            panel.setAttribute("aria-hidden", "false");
+        } else {
+            collapse.hide();
+            panel.setAttribute("aria-hidden", "true");
+        }
+    });
+}
+
+syncAccordionAccessibility();
+
+if (typeof accordionMediaQuery.addEventListener === "function") {
+    accordionMediaQuery.addEventListener("change", syncAccordionAccessibility);
+} else if (typeof accordionMediaQuery.addListener === "function") {
+    accordionMediaQuery.addListener(syncAccordionAccessibility);
+}
+
 // Provides function for the "Back" button
 const backButton = document.querySelector("#question-screen .back");
 if (backButton) {
@@ -372,11 +415,6 @@ function openQuestion(button) {
 
     const gameBoard = document.getElementById("game-board");
     const questionScreen = document.getElementById("question-screen");
-
-    // Checks if the selected question is already answered
-    if(currentQuestion.answered) {
-        return;
-    }
 
     if (gameBoard && questionScreen) {
         console.log("openQuestion", { category, value, question: currentQuestion.question });
@@ -421,24 +459,11 @@ function openQuestion(button) {
             // Disable every answer
             answerButtons.forEach(btn => btn.disabled = true)
 
-            //Logic for when the answer is correct or incorrect
-            if (index === currentQuestion.correct) {
-                score += Number(value);
-                button.classList.add("correct");
-                result.textContent = `Correct! +${value} points`
-                console.log("correct answer", { score, completed });
-
-                // Show the Did You Know section
-                const discoverySection = document.getElementById("did-you-know");
-                const discoveryText = document.getElementById("discovery-text");
-                discoveryText.textContent = currentQuestion.discovery;
-                discoverySection.classList.remove("hidden");
-            } else {
-                button.classList.add("wrong");
-                answerButtons[currentQuestion.correct].classList.add("correct");
-                result.textContent = `Incorrect!`;
-                console.log("incorrect answer", { score, completed });
-            }
+            // Show the Did You Know section for both outcomes
+            const discoverySection = document.getElementById("did-you-know");
+            const discoveryText = document.getElementById("discovery-text");
+            discoveryText.textContent = currentQuestion.discovery;
+            discoverySection.classList.remove("hidden");
 
             // Disables the Board button, as well as updating the completion state of the question and the progress bar
             activeQuestionButton.disabled = true;
@@ -447,6 +472,21 @@ function openQuestion(button) {
             completed ++;
             currentQuestion.answered = true;
             updateProgress();
+
+            //Logic for when the answer is correct or incorrect
+            if (index === currentQuestion.correct) {
+                score += Number(value);
+                button.classList.add("correct");
+                result.textContent = `Correct! +${value} points`
+                console.log("correct answer", { score, completed });
+                totalScore.textContent = `Score: ${score} / 7500`;
+            } else {
+                button.classList.add("wrong");
+                answerButtons[currentQuestion.correct].classList.add("correct");
+                result.textContent = `Incorrect!`;
+                console.log("incorrect answer", { score, completed });
+            }
+
         };
     },2000);
 }
@@ -464,10 +504,16 @@ function finishQuestion(){
         gameBoard.style.display = "";
     }
 
+    // Check if all questions have been completed and show the victory screen if so
     if(completed === 25){
+        document.body.classList.add("victory");
         gameBoard.classList.add("hidden");
         questionScreen.classList.add("hidden");
         victoryScreen.classList.remove("hidden");
+        const finalScoreElement = document.getElementById("final-score");
+        if (finalScoreElement) {
+            finalScoreElement.textContent = score;
+        }
     }
 }
 
