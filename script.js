@@ -6,11 +6,13 @@ const totalScore = document.getElementById("scoreText");
 if (totalScore) {
     totalScore.textContent = `Score: ${score} / 7500`;
 }
+
+// Define the questions, answers, and discoveries for each category and point value
 const questions = {
 
     "Dorm Life": {
         100: {
-            question: "which habit saves the most water in a dorm?",
+            question: "Which habit saves the most water in a dorm?",
             answers: [
                 "Take shorter showers",
                 "Leave the sink running",
@@ -345,6 +347,33 @@ const questions = {
 
 }
 
+// Makes the category discovery elements and counts more accessible for updating progress
+const categoryDiscoveryElements = {
+    "Dorm Life": document.getElementById("dormLifeDiscoveries"),
+    "Technology": document.getElementById("technologyDiscoveries"),
+    "Entertainment": document.getElementById("entertainmentDiscoveries"),
+    "Food": document.getElementById("foodDiscoveries"),
+    "The World": document.getElementById("theWorldDiscoveries")
+};
+
+// Initializes the category discovery counts to zero for each category
+const categoryDiscoveryCounts = Object.keys(questions).reduce((counts, category) => {
+    counts[category] = 0;
+    return counts;
+}, {});
+
+// Updates the category progress display based on the number of discoveries unlocked in that category
+function updateCategoryProgress(category) {
+    const categoryElement = categoryDiscoveryElements[category];
+
+    if (categoryElement) {
+        categoryElement.textContent = `${categoryDiscoveryCounts[category]}/5 Discoveries`; // Update the text content to show the number of discoveries unlocked in that category
+    }
+}
+
+// Initialize the category progress display for all categories
+Object.keys(categoryDiscoveryElements).forEach(updateCategoryProgress);
+
 // Detects which button was clicked
 const buttons = document.querySelectorAll(".question-button");
 buttons.forEach(button => {
@@ -465,12 +494,14 @@ function openQuestion(button) {
             discoveryText.textContent = currentQuestion.discovery;
             discoverySection.classList.remove("hidden");
 
-            // Disables the Board button, as well as updating the completion state of the question and the progress bar
+            // Disables the Board button, as well as updating the completion state of the question and the progress bar and texts
             activeQuestionButton.disabled = true;
             activeQuestionButton.classList.add("answered");
             activeQuestionButton.textContent = "✓"
             completed ++;
             currentQuestion.answered = true;
+            categoryDiscoveryCounts[category] ++;
+            updateCategoryProgress(category);
             updateProgress();
 
             //Logic for when the answer is correct or incorrect
@@ -512,7 +543,7 @@ function finishQuestion(){
         victoryScreen.classList.remove("hidden");
         const finalScoreElement = document.getElementById("final-score");
         if (finalScoreElement) {
-            finalScoreElement.textContent = score;
+            finalScoreElement.textContent = `${score}/7500`;
         }
     }
 }
